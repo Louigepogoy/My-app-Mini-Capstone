@@ -65,15 +65,15 @@ export default function OwnerDashboardPage() {
             <dl className="mt-3 space-y-2 text-xs">
               <div className="flex items-center justify-between rounded-xl bg-slate-950/70 px-3 py-2">
                 <dt>This week</dt>
-                <dd className="font-semibold">$214.40</dd>
+                <dd className="font-semibold">₱12,000.00</dd>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-slate-950/70 px-3 py-2">
                 <dt>This month</dt>
-                <dd className="font-semibold">$1,024.80</dd>
+                <dd className="font-semibold">₱57,000.00</dd>
               </div>
               <div className="flex items-center justify-between rounded-xl bg-slate-950/70 px-3 py-2">
                 <dt>Upcoming payout</dt>
-                <dd className="font-semibold">$312.00</dd>
+                <dd className="font-semibold">₱17,000.00</dd>
               </div>
             </dl>
           </section>

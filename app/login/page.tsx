@@ -7,9 +7,31 @@ export default function LoginPage() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Here you would normally validate credentials with your backend.
-    // For now we treat any input as "successful" and send the user to the dashboard.
-    router.push("/dashboard");
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "").toLowerCase();
+    const password = String(formData.get("password") ?? "");
+
+    // Demo credentials:
+    // - Admin: admin@rental.com / admin123
+    // - Owner: owner@rental.com / owner123
+    // - Others: treated as regular customers.
+    const isAdminAccount =
+      email === "admin@rental.com" && password === "admin123";
+    const isOwnerAccount =
+      email === "owner@rental.com" && password === "owner123";
+
+    const role = isAdminAccount ? "admin" : isOwnerAccount ? "owner" : "customer";
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("role", role);
+    }
+
+    if (role === "admin") {
+      router.push("/admin");
+    } else if (role === "owner") {
+      router.push("/owner");
+    } else {
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -79,6 +101,14 @@ export default function LoginPage() {
             Log in
           </button>
         </form>
+
+        <p className="mt-3 text-center text-[11px] text-slate-500">
+          Demo admin: <span className="font-mono">admin@rental.com</span> /
+          <span className="font-mono"> admin123</span>
+          <br />
+          Demo owner: <span className="font-mono">owner@rental.com</span> /
+          <span className="font-mono"> owner123</span>
+        </p>
 
         <p className="mt-5 text-center text-xs text-slate-400">
           New to the platform?{" "}

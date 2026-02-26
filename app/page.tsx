@@ -104,7 +104,7 @@ export default function Home() {
                   <p className="text-[11px] uppercase tracking-wide text-slate-400">
                     Estimated total
                   </p>
-                  <p className="mt-1 text-base font-semibold">$42.80</p>
+                  <p className="mt-1 text-base font-semibold">₱2,400.00</p>
                 </div>
                 <button
                   type="button"

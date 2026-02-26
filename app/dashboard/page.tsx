@@ -63,7 +63,7 @@ export default function DashboardPage() {
                   Ideal for city trips and solo travellers.
                 </p>
                 <p className="text-[11px] text-slate-300">
-                  From <span className="font-semibold">$18</span>/day
+                  From <span className="font-semibold">₱1,000</span>/day
                 </p>
               </article>
 
@@ -82,7 +82,7 @@ export default function DashboardPage() {
                   Extra space for luggage and up to 7 people.
                 </p>
                 <p className="text-[11px] text-slate-300">
-                  From <span className="font-semibold">$42</span>/day
+                  From <span className="font-semibold">₱2,400</span>/day
                 </p>
               </article>
 
@@ -101,7 +101,7 @@ export default function DashboardPage() {
                   Perfect for quick errands and short hops.
                 </p>
                 <p className="text-[11px] text-slate-300">
-                  From <span className="font-semibold">$12</span>/day
+                  From <span className="font-semibold">₱700</span>/day
                 </p>
               </article>
             </div>
