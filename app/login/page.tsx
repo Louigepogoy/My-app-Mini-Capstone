@@ -1,4 +1,17 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function LoginPage() {
+  const router = useRouter();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    // Here you would normally validate credentials with your backend.
+    // For now we treat any input as "successful" and send the user to the dashboard.
+    router.push("/dashboard");
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/90 p-6 shadow-2xl backdrop-blur">
@@ -14,7 +27,7 @@ export default function LoginPage() {
           </p>
         </header>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-1.5">
             <label
               htmlFor="email"
