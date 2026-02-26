@@ -79,6 +79,12 @@ export default function AdminDashboardPage() {
                 Delete vehicle
               </a>
               <a
+                href="/admin/vehicle-requests"
+                className="inline-flex w-full items-center justify-center rounded-full bg-slate-800 px-3 py-2 font-medium text-slate-50 transition hover:bg-slate-700"
+              >
+                Review owner vehicle requests
+              </a>
+              <a
                 href="/admin/reports"
                 className="inline-flex w-full items-center justify-center rounded-full bg-slate-800 px-3 py-2 font-medium text-slate-50 transition hover:bg-slate-700"
               >

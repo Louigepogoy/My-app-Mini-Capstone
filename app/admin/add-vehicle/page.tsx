@@ -2,8 +2,21 @@
 
 import { useEffect, useState } from "react";
 
+type Vehicle = {
+  id: string;
+  name: string;
+  brand: string;
+  owner: string;
+  plate: string;
+  price: number;
+  location: string;
+  status: "available" | "rented";
+};
+
 export default function AdminAddVehiclePage() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -37,7 +50,41 @@ export default function AdminAddVehiclePage() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    alert("Vehicle added (demo only). Connect this to your backend.");
+    setMessage(null);
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const vehicle: Vehicle = {
+      id: Date.now().toString(),
+      name: (formData.get("name") as string) || "",
+      brand: (formData.get("brand") as string) || "",
+      owner: (formData.get("owner") as string) || "",
+      plate: (formData.get("plate") as string) || "",
+      price: Number(formData.get("price") || 0),
+      location: (formData.get("location") as string) || "",
+      status: "available",
+    };
+
+    try {
+      setIsSaving(true);
+
+      if (typeof window !== "undefined") {
+        const existingRaw = window.localStorage.getItem("vehicles");
+        const existing: Vehicle[] = existingRaw ? JSON.parse(existingRaw) : [];
+
+        const updated = [...existing, vehicle];
+        window.localStorage.setItem("vehicles", JSON.stringify(updated));
+      }
+
+      form.reset();
+      setMessage("Vehicle saved. Customers can now see and rent it from their dashboard.");
+    } catch (error) {
+      console.error("Failed to save vehicle", error);
+      setMessage("Something went wrong while saving the vehicle. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -58,6 +105,11 @@ export default function AdminAddVehiclePage() {
           onSubmit={handleSubmit}
           className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900/80 p-5 shadow-lg text-xs"
         >
+          {message && (
+            <p className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-[11px] text-slate-200">
+              {message}
+            </p>
+          )}
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-1">
               <span className="block text-[11px] font-medium text-slate-200">
@@ -138,9 +190,10 @@ export default function AdminAddVehiclePage() {
 
           <button
             type="submit"
-            className="mt-2 inline-flex items-center justify-center rounded-full bg-fuchsia-500 px-5 py-2 text-xs font-medium text-white shadow-sm hover:bg-fuchsia-400"
+            disabled={isSaving}
+            className="mt-2 inline-flex items-center justify-center rounded-full bg-fuchsia-500 px-5 py-2 text-xs font-medium text-white shadow-sm hover:bg-fuchsia-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Save vehicle (demo)
+            {isSaving ? "Saving…" : "Save vehicle"}
           </button>
         </form>
       </div>
