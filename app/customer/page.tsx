@@ -1,6 +1,7 @@
  "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./customer.module.css";
 
 type Vehicle = {
   id: string;
@@ -10,6 +11,8 @@ type Vehicle = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "available" | "rented";
 };
 
@@ -65,9 +68,11 @@ export default function CustomerDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <div
+      className={`${styles.customerPage} min-h-screen bg-slate-950 px-4 py-6 text-slate-50`}
+    >
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <header className="flex flex-col gap-3 border-b border-slate-800 pb-5 md:flex-row md:items-center md:justify-between">
+        <header className={`${styles.customerHeaderAccent} flex flex-col gap-3 border-b border-slate-800 pb-5 md:flex-row md:items-center md:justify-between`}>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-400">
               Customer dashboard
@@ -132,7 +137,7 @@ export default function CustomerDashboardPage() {
           <section className="space-y-3 rounded-2xl border border-slate-800 bg-slate-900/80 p-4 shadow-lg">
             <h2 className="text-sm font-semibold">Available vehicles</h2>
             <p className="text-[11px] text-slate-400">
-              Cars created by admins that you can rent.
+              Cars created by admins and verified owners that you can rent.
             </p>
             <div className="mt-3 grid gap-3 text-xs md:grid-cols-1">
               {availableVehicles.length === 0 ? (
@@ -146,6 +151,19 @@ export default function CustomerDashboardPage() {
                     key={vehicle.id}
                     className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/70 p-3"
                   >
+                    {vehicle.imageUrl ? (
+                      <div className="mb-2 overflow-hidden rounded-lg border border-slate-800/60 bg-slate-900">
+                        <img
+                          src={vehicle.imageUrl}
+                          alt={vehicle.name}
+                          className="h-32 w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-2 flex h-32 w-full items-center justify-center rounded-lg border border-dashed border-slate-800/70 bg-slate-900/60 text-[10px] text-slate-500">
+                        Image not provided
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <p className="font-medium">{vehicle.name}</p>
                       <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
@@ -166,11 +184,18 @@ export default function CustomerDashboardPage() {
                     <p className="text-[11px] text-slate-400">
                       Location: <span className="text-slate-200">{vehicle.location}</span>
                     </p>
+                    <p className="text-[11px] text-slate-300">
+                      {vehicle.description && vehicle.description.trim().length > 0
+                        ? vehicle.description
+                        : "No description provided for this vehicle."}
+                    </p>
                     <div className="mt-1 flex items-center justify-between text-[11px] text-slate-300">
                       <p>
                         From{" "}
                         <span className="font-semibold">
-                          ₱{vehicle.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                          ₱{vehicle.price.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                         /day
                       </p>

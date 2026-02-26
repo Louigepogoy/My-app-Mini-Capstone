@@ -1,8 +1,14 @@
+import styles from "./admin.module.css";
+
 export default function AdminDashboardPage() {
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <div
+      className={`${styles.adminPage} min-h-screen bg-slate-950 px-4 py-6 text-slate-50`}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <header className="flex flex-col justify-between gap-4 border-b border-slate-800 pb-5 md:flex-row md:items-center">
+        <header
+          className={`${styles.adminHeaderAccent} flex flex-col justify-between gap-4 border-b border-slate-800 pb-5 md:flex-row md:items-center`}
+        >
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-fuchsia-400">
               Admin dashboard

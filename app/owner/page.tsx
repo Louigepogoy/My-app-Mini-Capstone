@@ -1,6 +1,7 @@
  "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import styles from "./owner.module.css";
 
 type Vehicle = {
   id: string;
@@ -10,6 +11,8 @@ type Vehicle = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "available" | "rented";
 };
 
@@ -21,6 +24,8 @@ type VehicleRequest = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "pending";
 };
 
@@ -30,6 +35,21 @@ export default function OwnerDashboardPage() {
   const [myRequests, setMyRequests] = useState<VehicleRequest[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  function handleImageFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setImagePreviewUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -86,6 +106,8 @@ export default function OwnerDashboardPage() {
     const plate = (formData.get("plate") as string) || "";
     const price = Number(formData.get("price") || 0);
     const location = (formData.get("location") as string) || "";
+    const description = (formData.get("description") as string) || "";
+    const imageUrl = (formData.get("imageUrl") as string) || "";
 
     if (!submittedOwnerName) {
       setMessage("Please enter your name as the vehicle owner.");
@@ -100,6 +122,8 @@ export default function OwnerDashboardPage() {
       plate,
       price,
       location,
+      description,
+      imageUrl,
       status: "pending",
     };
 
@@ -130,9 +154,11 @@ export default function OwnerDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-slate-50">
+    <div
+      className={`${styles.ownerPage} min-h-screen bg-slate-950 px-4 py-6 text-slate-50`}
+    >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <header className="flex flex-col gap-3 border-b border-slate-800 pb-5 md:flex-row md:items-center md:justify-between">
+        <header className={`${styles.ownerHeaderAccent} flex flex-col gap-3 border-b border-slate-800 pb-5 md:flex-row md:items-center md:justify-between`}>
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-400">
               Vehicle owner dashboard
@@ -177,32 +203,54 @@ export default function OwnerDashboardPage() {
                   key={vehicle.id}
                   className="space-y-1 rounded-xl border border-slate-800 bg-slate-950/70 p-3"
                 >
-                  <div className="flex items-center justify-between">
-                    <p className="font-medium">
-                      {vehicle.name} · {vehicle.plate}
-                    </p>
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                        vehicle.status === "available"
-                          ? "bg-emerald-500/10 text-emerald-300"
-                          : "bg-sky-500/10 text-sky-300"
-                      }`}
-                    >
-                      {vehicle.status === "available" ? "Available" : "On trip"}
-                    </span>
+                  <div className="flex gap-3">
+                    {vehicle.imageUrl ? (
+                      <div className="h-16 w-20 overflow-hidden rounded-lg border border-slate-800/60 bg-slate-900">
+                        <img
+                          src={vehicle.imageUrl}
+                          alt={vehicle.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-16 w-20 items-center justify-center rounded-lg border border-dashed border-slate-800/70 bg-slate-900/60 text-[9px] text-slate-500">
+                        No image
+                      </div>
+                    )}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium">
+                          {vehicle.name} · {vehicle.plate}
+                        </p>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                            vehicle.status === "available"
+                              ? "bg-emerald-500/10 text-emerald-300"
+                              : "bg-sky-500/10 text-sky-300"
+                          }`}
+                        >
+                          {vehicle.status === "available" ? "Available" : "On trip"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">
+                        Location: {vehicle.location}
+                      </p>
+                      <p className="text-[11px] text-slate-300">
+                        Daily rate:{" "}
+                        <span className="font-semibold">
+                          ₱
+                          {vehicle.price.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        {vehicle.description && vehicle.description.trim().length > 0
+                          ? vehicle.description
+                          : "No description provided yet."}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-slate-400">
-                    Location: {vehicle.location}
-                  </p>
-                  <p className="text-[11px] text-slate-300">
-                    Daily rate:{" "}
-                    <span className="font-semibold">
-                      ₱
-                      {vehicle.price.toLocaleString(undefined, {
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
                 </article>
               ))}
             </div>
@@ -301,6 +349,55 @@ export default function OwnerDashboardPage() {
                 </label>
               </div>
 
+              <div className="grid gap-3 md:grid-cols-2">
+                <label className="space-y-1 md:col-span-2">
+                  <span className="block text-[11px] font-medium text-slate-200">
+                    Short description
+                  </span>
+                  <textarea
+                    name="description"
+                    rows={3}
+                    className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-50 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/60"
+                    placeholder="E.g. Spacious and comfortable for long family trips."
+                  />
+                </label>
+                <label className="space-y-1">
+                  <span className="block text-[11px] font-medium text-slate-200">
+                    Image URL
+                  </span>
+                  <div className="flex items-center gap-3">
+                    <input type="hidden" name="imageUrl" value={imagePreviewUrl} />
+                    <input
+                      type="url"
+                      onChange={(event) => setImagePreviewUrl(event.target.value)}
+                      className="w-full flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-50 outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/60"
+                      placeholder="https://example.com/vehicle-photo.jpg"
+                    />
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageFileChange}
+                    />
+                    <div
+                      className="hidden h-16 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-slate-800/70 bg-slate-900 text-[9px] text-slate-500 md:flex"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {imagePreviewUrl ? (
+                        <img
+                          src={imagePreviewUrl}
+                          alt="Preview"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        "Add Image"
+                      )}
+                    </div>
+                  </div>
+                </label>
+              </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -338,6 +435,11 @@ export default function OwnerDashboardPage() {
                         {request.price.toLocaleString(undefined, {
                           maximumFractionDigits: 2,
                         })}
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        {request.description && request.description.trim().length > 0
+                          ? request.description
+                          : "No description provided."}
                       </p>
                     </div>
                   ))}

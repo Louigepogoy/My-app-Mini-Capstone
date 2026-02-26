@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Vehicle = {
   id: string;
@@ -10,6 +10,8 @@ type Vehicle = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "available" | "rented";
 };
 
@@ -17,6 +19,21 @@ export default function AdminAddVehiclePage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  function handleImageFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        setImagePreviewUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,6 +80,8 @@ export default function AdminAddVehiclePage() {
       plate: (formData.get("plate") as string) || "",
       price: Number(formData.get("price") || 0),
       location: (formData.get("location") as string) || "",
+      description: (formData.get("description") as string) || "",
+      imageUrl: (formData.get("imageUrl") as string) || "",
       status: "available",
     };
 
@@ -185,6 +204,55 @@ export default function AdminAddVehiclePage() {
                 className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-50 outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500/60"
                 placeholder="Downtown Hub"
               />
+            </label>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="space-y-1 md:col-span-2">
+              <span className="block text-[11px] font-medium text-slate-200">
+                Short description
+              </span>
+              <textarea
+                name="description"
+                rows={3}
+                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-50 outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500/60"
+                placeholder="E.g. Fuel-efficient compact ideal for city commutes and weekend trips."
+              />
+            </label>
+            <label className="space-y-1">
+              <span className="block text-[11px] font-medium text-slate-200">
+                Image URL
+              </span>
+              <div className="flex items-center gap-3">
+                <input type="hidden" name="imageUrl" value={imagePreviewUrl} />
+                <input
+                  type="url"
+                  onChange={(event) => setImagePreviewUrl(event.target.value)}
+                  className="w-full flex-1 rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-50 outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500/60"
+                  placeholder="https://example.com/vehicle-photo.jpg"
+                />
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageFileChange}
+                />
+                <div
+                  className="hidden h-16 w-24 cursor-pointer items-center justify-center overflow-hidden rounded-lg border border-slate-800/70 bg-slate-900 text-[9px] text-slate-500 md:flex"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {imagePreviewUrl ? (
+                    <img
+                      src={imagePreviewUrl}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    "Preview"
+                  )}
+                </div>
+              </div>
             </label>
           </div>
 

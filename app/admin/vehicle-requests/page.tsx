@@ -10,6 +10,8 @@ type VehicleRequest = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "pending";
 };
 
@@ -21,6 +23,8 @@ type Vehicle = {
   plate: string;
   price: number;
   location: string;
+  description?: string;
+  imageUrl?: string;
   status: "available" | "rented";
 };
 
@@ -63,6 +67,8 @@ export default function AdminVehicleRequestsPage() {
         plate: request.plate,
         price: request.price,
         location: request.location,
+        description: request.description,
+        imageUrl: request.imageUrl,
         status: "available",
       };
 
@@ -149,51 +155,73 @@ export default function AdminVehicleRequestsPage() {
                   key={request.id}
                   className="space-y-2 rounded-xl border border-slate-800 bg-slate-950/70 p-3"
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-semibold text-slate-50">
-                        {request.name} · {request.plate}
+                  <div className="flex gap-3">
+                    {request.imageUrl ? (
+                      <div className="h-16 w-20 overflow-hidden rounded-lg border border-slate-800/60 bg-slate-900">
+                        <img
+                          src={request.imageUrl}
+                          alt={request.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex h-16 w-20 items-center justify-center rounded-lg border border-dashed border-slate-800/70 bg-slate-900/60 text-[9px] text-slate-500">
+                        No image
+                      </div>
+                    )}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-50">
+                            {request.name} · {request.plate}
+                          </p>
+                          <p className="text-[11px] text-slate-400">
+                            Owner: <span className="text-slate-200">{request.ownerName}</span>
+                          </p>
+                        </div>
+                        <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
+                          Pending
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-slate-400">
+                        Brand: <span className="text-slate-200">{request.brand}</span> · Location:{" "}
+                        <span className="text-slate-200">{request.location}</span>
+                      </p>
+                      <p className="text-[11px] text-slate-300">
+                        Daily rate:{" "}
+                        <span className="font-semibold">
+                          ₱
+                          {request.price.toLocaleString(undefined, {
+                            maximumFractionDigits: 2,
+                          })}
+                        </span>
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        Owner: <span className="text-slate-200">{request.ownerName}</span>
+                        {request.description && request.description.trim().length > 0
+                          ? request.description
+                          : "No description provided."}
                       </p>
+
+                      <div className="mt-2 flex items-center justify-end gap-2 text-[11px]">
+                        <button
+                          type="button"
+                          onClick={() => handleReject(request.id)}
+                          disabled={isProcessing === request.id}
+                          className="rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 hover:border-rose-500 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          Reject
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApprove(request.id)}
+                          disabled={isProcessing === request.id}
+                          className="rounded-full bg-emerald-500 px-3 py-1.5 font-medium text-white hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {isProcessing === request.id ? "Processing…" : "Approve & publish"}
+                        </button>
+                      </div>
                     </div>
-                    <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-300">
-                      Pending
-                    </span>
-                  </div>
-
-                  <p className="text-[11px] text-slate-400">
-                    Brand: <span className="text-slate-200">{request.brand}</span> · Location:{" "}
-                    <span className="text-slate-200">{request.location}</span>
-                  </p>
-                  <p className="text-[11px] text-slate-300">
-                    Daily rate:{" "}
-                    <span className="font-semibold">
-                      ₱
-                      {request.price.toLocaleString(undefined, {
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
-                  </p>
-
-                  <div className="mt-2 flex items-center justify-end gap-2 text-[11px]">
-                    <button
-                      type="button"
-                      onClick={() => handleReject(request.id)}
-                      disabled={isProcessing === request.id}
-                      className="rounded-full border border-slate-700 px-3 py-1.5 text-slate-200 hover:border-rose-500 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      Reject
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleApprove(request.id)}
-                      disabled={isProcessing === request.id}
-                      className="rounded-full bg-emerald-500 px-3 py-1.5 font-medium text-white hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {isProcessing === request.id ? "Processing…" : "Approve & publish"}
-                    </button>
                   </div>
                 </article>
               ))}
